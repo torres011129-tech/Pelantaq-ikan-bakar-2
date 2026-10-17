@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pelantaq Ikan Bakar — Segar & Berperisa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            scroll-behavior: smooth;
+            padding-bottom: 80px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        header {
+            position: sticky;
+            top: 0;
+            background-color: #0f172a;
+            padding: 12px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+            z-index: 950;
+        }
+        .header-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-small {
+            height: 48px;
+            width: auto;
+            border-radius: 50%;
+        }
+        .brand-text {
+            color: #fbbf24;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        .logo-hero {
+            height: 170px;
+            width: auto;
+            margin-bottom: 20px;
+            border-radius: 50%;
+        }
+        .cart-fixed-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #1e293b;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.35);
+            z-index: 900;
+        }
+        .cart-count-label {
+            font-size: 1rem;
+            color: #fef3c7;
+        }
+        .btn-cart-open {
+            padding: 10px 22px;
+            background-color: #f59e0b;
+            color: #0f172a;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .btn-cart-open:hover {
+            background-color: #fbbf24;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+            gap: 24px;
+        }
+        .menu-card {
+            background-color: #1e293b;
+            border-radius: 18px;
+            padding: 24px;
+            transition: transform 0.3s ease;
+        }
+        .menu-card:hover {
+            transform: translateY(-6px);
+        }
+        .menu-card h4 {
+            color: #fbbf24;
+            margin-bottom: 8px;
+        }
+        .price {
+            margin-top: 12px;
+            font-weight: bold;
+            color: #a5f3fc;
+        }
+        .promo-highlight {
+            border: 2px solid #fbbf24;
+            background-color: #273449;
+        }
+        /* Gaya untuk Kuantiti + - */
+        .qty-wrap {
+            display:flex;
+            gap:8px;
+            align-items:center;
+            margin-top:14px;
+            margin-bottom:12px;
+        }
+        .btn-min,.btn-plus {
+            padding:6px 12px;
+            border:none;
+            border-radius:6px;
+            background:#f59e0b;
+            color:#0f172a;
+            font-weight:bold;
+            cursor:pointer;
+        }
+        .qty-val {
+            min-width:32px;
+            text-align:center;
+            font-size:1.1rem;
+        }
+        .btn-add-cart {
+            width:100%;
+            padding:10px;
+            background-color:#f59e0b;
+            color:#0f172a;
+            font-weight:600;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+        }
+        .btn-add-cart:hover {
+            background-color:#fbbf24;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15,23,42,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+            z-index: 999;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-box {
+            background-color: #1e293b;
+            border-radius: 20px;
+            padding: 28px;
+            width: 100%;
+            max-width: 540px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(30px);
+            transition: transform 0.35s ease;
+        }
+        .modal-overlay.active .modal-box {
+            transform: translateY(0);
+        }
+        .modal-box h3 {
+            color: #fbbf24;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .cart-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #334155;
+        }
+        .btn-remove-item {
+            padding:4px 10px;
+            background-color:#ef4444;
+            color:#fff;
+            border:none;
+            border-radius:6px;
+            cursor:pointer;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #fef3c7;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background-color: #334155;
+            color: #f8fafc;
+            font-size: 1rem;
+        }
+        .modal-btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .btn-cancel {
+            padding: 12px;
+            background-color: #475569;
+            color: #f8fafc;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-submit-order {
+            padding: 12px;
+            background-color: #22c55e;
+            color: #0f172a;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .cta-block {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(160deg,#1e293b,#0f172a);
+        }
+        footer {
+            text-align: center;
+            padding: 32px 20px;
+        }
+        .footer-logo {
+            width: 120px;
+            height: auto;
+            border-radius: 50%;
+            margin-bottom: 16px;
+        }
+        .footer-thanks-title {
+            color: #fbbf24;
+            margin-bottom: 12px;
+        }
+        .footer-thanks-text {
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.85;
+        }
+        .footer-copyright {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            opacity: 0.75;
+        }
+        section {
+            padding: 80px 0;
+        }
+        section h2 {
+            text-align: center;
+            font-size: 2rem;
+            color: #fbbf24;
+            margin-bottom: 48px;
+        }
+        section h3 {
+            color: #fef3c7;
+            margin: 32px 0 16px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-wrap">
+            <img src="logo-pelantaq.png" alt="Logo Pelantaq Ikan Bakar" class="logo-small">
+            <span class="brand-text">PELANTAQ IKAN BAKAR</span>
+        </div>
+    </header>
+
+    <div class="cart-fixed-bar">
+        <div class="cart-count-label">Jumlah Item: <span id="cartTotalItem">0</span></div>
+        <button class="btn-cart-open" id="btnCartOpen">Lihat Troli & Tempah</button>
+    </div>
+
+    <section class="hero">
+        <div class="container" style="text-align:center;">
+            <img src="logo-pelantaq.png" alt="Logo Pelantaq Ikan Bakar" class="logo-hero">
+            <h1>PELANTAQ IKAN BAKAR</h1>
+            <p>Ikan segar dibakar dengan rempah rahsia — berjus, wangi & cukup perisa. Pilih kuantiti kemudian tambah ke troli!</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Menu Promosi</h2>
+            <div class="menu-grid">
+                <div class="menu-card promo-highlight">
+                    <h4>Chicken Chop Mini</h4>
+                    <p class="price">RM 8.00</p>
+                    <div class="qty-wrap">
+                        <button class="btn-min" data-name="Chicken Chop Mini">−</button>
+                        <span class="qty-val" data-name="Chicken Chop Mini">0</span>
+                        <button class="btn-plus" data-name="Chicken Chop Mini">+</button>
+                    </div>
+                    <button class="btn-add-cart" data-name="Chicken Chop Mini">Tambah Ke Troli</button>
+                </div>
+                <div class="menu-card promo-highlight">
+                    <h4>Set Sosej Jumbo</h4>
+                    <p class="price">RM 10.00</p>
+                    <div class="qty-wrap">
+                        <button class="btn-min" data-name="Set Sosej Jumbo">−</button>
+                        <span class="qty-val" data-name="Set Sosej Jumbo">0</span>
+                        <button class="btn-plus" data-name="Set Sosej Jumbo">+</button>
+                    </div>
+                    <button class="btn-add-cart" data-name="Set Sosej Jumbo">Tambah Ke Troli</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Menu Utama Ikan Bakar</h2>
+            <h3>Set Ikan</h3>
+            <div class="menu-grid">
+                <div class="menu-card">
+                    <h4>Set Single</h4>
+                    <p>Ikan Siakap (S) Bakar /3 Rasa, Nasi Putih, Sambal Sotong, Sup Sayur Mini</p>
+                    <p class="price">RM 25.00</p>
+                    <div class="qty-wrap">
+                        <button class="btn-min" data-name="Set Single">−</button>
+                        <span class="qty-val" data-name="Set Single">0</span>
+                        <button class="btn-plus" data-name="Set Single">+</button>
+                    </div>
+                    <button class="btn-add-cart" data-name="Set Single">Tambah Ke Troli</button>
+                </div>
+                <div class="menu-card">
+                    <h4>Set Couple</h4>
+                    <p>Ikan Siakap (M) Bakar /3 Rasa, Nasi Putih ×2, Sup Sayur(M), Telur Dadar(S)</p>
+                    <p class="price">RM 35.00</p>
+                    <div class="qty-wrap">
+                        <button class="btn-min" data-name="Set Couple">−</button>
+                        <span class="qty-val" data-name="Set Couple">0</span>
+                        <button class="btn-plus" data-name="Set Couple">+</button>
+                    </div>
+                    <button class="btn-add-cart" data-name="Set Couple">Tambah Ke Troli</button>
+                </div>
+                <div class="menu-card">
+                    <h4>Set Family</h4>
+                    <p>Ikan Siakap (L) Bakar /3 Rasa, Nasi Putih ×4, Sup Sayur/Daging(L), Telur Dadar(M)</p>
+                    <p class="price">RM 55.00</p>
+                    <div class="qty-wrap">
+                        <button class="btn-min" data-name="Set Family">−</button>
+                        <span class="qty-val" data-name="Set Family">0</span>
+                        <button class="btn-plus" data-name="Set Family">+</button>
+                    </div>
+                    <button class="btn-add-cart" data-name="Set Family">Tambah Ke Troli</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <img src="logo-pelantaq.png" alt="Logo Pelantaq Ikan Bakar" class="footer-logo">
+        <h3 class="footer-thanks-title">Terima Kasih</h3>
+        <p class="footer-thanks-text">
+            Terima kasih kerana memilih Pelantaq Ikan Bakar sebagai pilihan makan anda. Kami sentiasa berusaha menyediakan hidangan segar, berperisa dan berkualiti untuk anda sekalian.
+        </p>
+        <p class="footer-copyright">
+            © 2026 Pelantaq Ikan Bakar — Semua hak terpelihara
+        </p>
+    </footer>
+
+    <div class="modal-overlay" id="modalCart">
+        <div class="modal-box">
+            <h3>Troli & Borang Tempahan</h3>
+            <div id="cartListWrap"></div>
+            <form id="borangTempahan">
+                <div class="form-group">
+                    <label>Nama Pelanggan</label>
+                    <input type="text" id="inputNama" required placeholder="Masukkan nama anda">
+                </div>
+                <div class="form-group">
+                    <label>Nombor Telefon</label>
+                    <input type="tel" id="inputTelefon" required placeholder="012‑XXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label>Pilih Penjual WhatsApp</label>
+                    <select id="pilihPenjual" required>
+                        <option value="601155365129">Hafiz — 011‑5536‑5129</option>
+                        <option value="60134633399">Ain — 013‑463‑3399</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Catatan Tambahan</label>
+                    <textarea id="inputCatatan" rows="3" placeholder="Contoh: Kurang pedas, bawa pulang…"></textarea>
+                </div>
+                <div class="modal-btn-row">
+                    <button type="button" class="btn-cancel" id="btnCartClose">Tutup</button>
+                    <button type="submit" class="btn-submit-order">Hantar Ke WhatsApp</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let cartItems = [];
+        let qtyStore = {};
+        const cartTotalItemEl = document.getElementById('cartTotalItem');
+        const btnCartOpen = document.getElementById('btnCartOpen');
+        const modalCart = document.getElementById('modalCart');
+        const btnCartClose = document.getElementById('btnCartClose');
+        const cartListWrap = document.getElementById('cartListWrap');
+        const borangTempahan = document.getElementById('borangTempahan');
+
+        // Kemaskini paparan kuantiti pada kad menu
+        function refreshQtyDisplay(itemName){
+            const els = document.querySelectorAll(`.qty-val[data-name="${itemName}"]`);
+            els.forEach(el=> el.textContent = qtyStore[itemName] || 0);
+        }
+
+        // Kemaskini paparan troli
+        function updateCartUI(){
+            let totalQty = cartItems.reduce((sum, it)=> sum + it.qty, 0);
+            cartTotalItemEl.textContent = totalQty;
+            cartListWrap.innerHTML = '';
+            if(cartItems.length === 0){
+                cartListWrap.innerHTML = '<p style="margin-bottom:16px;color:#cbd5e1;">Troli masih kosong. Sila pilih kuantiti dahulu.</p>';
+                return;
+            }
+            cartItems.forEach((item, idx)=>{
+                const row = document.createElement('div');
+                row.className = 'cart-item-row';
+                row.innerHTML = `<span>${item.name} × ${item.qty}</span><button class="btn-remove-item" data-idx="${idx}">Buang</button>`;
+                cartListWrap.appendChild(row);
+            });
+            document.querySelectorAll('.btn-remove-item').forEach(btn=>{
+                btn.onclick = function(){
+                    const i = parseInt(this.getAttribute('data-idx'));
+                    const removedName = cartItems[i].name;
+                    cartItems.splice(i,1);
+                    qtyStore[removedName] = 0;
+                    refreshQtyDisplay(removedName);
+                    updateCartUI();
+                }
+            });
+        }
+
+        // Butang +
+        document.querySelectorAll('.btn-plus').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                const name = btn.getAttribute('data-name');
+                if(!qtyStore[name]) qtyStore[name] = 0;
+                qtyStore[name] += 1;
+                refreshQtyDisplay(name);
+            })
+        });
+        // Butang −
+        document.querySelectorAll('.btn-min').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                const name = btn.getAttribute('data-name');
+                if(!qtyStore[name]) qtyStore[name] = 0;
+                if(qtyStore[name] > 0) qtyStore[name] -= 1;
+                refreshQtyDisplay(name);
+            })
+        });
+        // Butang Tambah Ke Troli
+        document.querySelectorAll('.btn-add-cart').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                const name = btn.getAttribute('data-name');
+                const qty = qtyStore[name] || 0;
+                if(qty <= 0){
+                    alert('Sila tekan + untuk pilih kuantiti dahulu!');
+                    return;
+                }
+                const existIndex = cartItems.findIndex(x=> x.name === name);
+                if(existIndex >=0){
+                    cartItems[existIndex].qty = qty;
+                }else{
+                    cartItems.push({name: name, qty: qty});
+                }
+                alert(`${name} (${qty} unit) telah dimasukkan ke troli!`);
+                qtyStore[name] = 0;
+                refreshQtyDisplay(name);
+                updateCartUI();
+            })
+        });
+
+        btnCartOpen.addEventListener('click',()=>{
+            updateCartUI();
+            modalCart.classList.add('active');
+        });
+        btnCartClose.addEventListener('click',()=>{
+            modalCart.classList.remove('active');
+            borangTempahan.reset();
+        });
+
+        borangTempahan.addEventListener('submit',function(e){
+            e.preventDefault();
+            if(cartItems.length === 0){
+                alert('Sila tambah sekurang‑kurangnya satu item ke troli!');
+                return;
+            }
+            const nama = document.getElementById('inputNama').value.trim();
+            const telefon = document.getElementById('inputTelefon').value.trim();
+            const penjualWa = document.getElementById('pilihPenjual').value;
+            const catatan = document.getElementById('inputCatatan').value.trim();
+
+            let senarai = '';
+            cartItems.forEach((it,i)=>{
+                senarai += `${i+1}. ${it.name} × ${it.qty}\n`;
+            });
+            let mesej = `*Tempahan Pelantaq Ikan Bakar*\n`;
+            mesej += `Nama: ${nama}\n`;
+            mesej += `No Telefon: ${telefon}\n`;
+            mesej += `Senarai Pesanan:\n${senarai}`;
+            mesej += `Catatan: ${catatan || "Tiada catatan"}`;
+
+            const waUrl = `https://wa.me/${penjualWa}?text=${encodeURIComponent(mesej)}`;
+            window.open(waUrl,'_blank');
+            cartItems = [];
+            Object.keys(qtyStore).forEach(k=> { qtyStore[k]=0; refreshQtyDisplay(k); });
+            updateCartUI();
+            modalCart.classList.remove('active');
+            borangTempahan.reset();
+        });
+    </script>
+</body>
+</html>
